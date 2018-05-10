@@ -1,13 +1,20 @@
-class Console:
-    import definitions
-    import datetime
-    import inspect
-    import sys
-    import os
+from injection import inject
 
+
+@inject('definitions')
+@inject('datetime')
+@inject('inspect')
+@inject('sys')
+@inject('os')
+class Console:
     __tag = "[ logger ]"
 
-    def __init__(self, verbose=False):
+    def __init__(self, definitions, datetime, inspect, sys, os, verbose=False):
+        self.definitions = definitions
+        self.datetime = datetime
+        self.inspect = inspect
+        self.sys = sys
+        self.os = os
         self._verbose = verbose
         self.__boot__()
 
@@ -61,7 +68,7 @@ class Console:
 
         self.__sys_print__(res)
 
-    def log(self, msg, is_err=False):
+    def log(self, msg, is_err=False, critical=False):
         cur_time = "[ " + self.datetime.datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S") + " ]"
         tag = ""
 
@@ -80,13 +87,13 @@ class Console:
 
         try:
             if is_err:
-                if self._verbose:
+                if self._verbose or critical:
                     self.sys.stderr.write(data)
 
                 with open(self.definitions.ERR_LOG, "a+") as elog:
                     elog.write(data)
             else:
-                if self._verbose:
+                if self._verbose or critical:
                     self.sys.stdout.write(data)
 
                 with open(self.definitions.INFO_LOG, "a+") as ilog:

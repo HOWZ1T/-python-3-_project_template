@@ -1,2 +1,5 @@
-requests:-1  # (name, pip version string) -1 is lastest version
-python-twitter:-1
+# each entry consists of the package name and an optional pip version string
+# a comment line is denoted by a '#'
+# example entries:
+# requests
+# python-twitter==3.4.1

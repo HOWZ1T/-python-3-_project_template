@@ -6,13 +6,29 @@ import time
 import sys
 import os
 
+null_stream = None  # try and setup a DEVNULL stream for unwanted output
+try:
+    from subprocess import DEVNULL
+    null_stream = DEVNULL
+except ImportError:
+    try:
+        null_stream = open(os.devnull, 'wb')
+    except FileNotFoundError:
+        null_stream = sys.stdout
+    except Exception:
+        null_stream = sys.stdout
+
 
 title = "Python 3 Project Template"
+version = '0.0.0'
 author = 'Dylan Randall'
 email = 'dylan.d.randall@gmail.com'
 last_updated = '12/05/2018'
 min_compatible_version = (3, 6)
-dependencies = [['requests', '-1'], ['twitter', '==1.18.0']]  # [module_name, version_sum] , if version_sum is -1 -> gets latest
+pip_version = 'python3'
+
+# [module_name, version_sum] , if version_sum is -1 -> gets latest
+dependencies = [['requests', '-1'], ['python-twitter', '==3.4.1']]
 
 packages = ['injection', 'logger']
 modules = ['definitions']
@@ -71,63 +87,24 @@ for module in modules:
     sys.stdout.write(module + "...OK\n")
 sys.stdout.write("internal modules...OK\n")
 
-
-missing_dependencies = []
-available_modules = []
-lib_roots = []  # library root paths
-sys.stdout.write("getting library paths...\n")
-for path in sys.path:
-    if os.path.isdir(path):
-        end_dir = path.split('\\')
-        end_dir = end_dir[-1:][0]
-        if end_dir == 'lib' or end_dir == 'site-packages':
-            lib_roots.append(path)
-            sys.stdout.write(path + "...OK\n")
-
-sys.stdout.write("getting available modules...\n")
-skip = ['__init__', '__pycache__', 'test', 'readme', '_version', '_utils', '_main', '_monitor', '_collections',
-        'top_level', 'metadata', 'installer', 'commands', 'record', '_installed', '__main__', 'make_mode']
-for lib_root in lib_roots:
-    for root, dirs, files in os.walk(lib_root, topdown=False):
-        for name in files:
-            if name is None or name == '' or name[0] == '_':
-                continue
-
-            parts = name.split('.')
-            if len(parts) > 1:
-                name = parts[0]
-
-            parts = name.split('-')
-            if len(parts) > 1:
-                name = parts[0]
-
-            name = name.lower()
-            if name not in skip and name not in available_modules:
-                available_modules.append(name)
-        for name in dirs:
-            if name is None or name == '' or name[0] == '_':
-                continue
-
-            parts = name.split('.')
-            if len(parts) > 1:
-                name = parts[0]
-
-            parts = name.split('-')
-            if len(parts) > 1:
-                name = parts[0]
-
-            name = name.lower()
-            if name not in skip and name not in available_modules:
-                available_modules.append(name)
-sys.stdout.write("got {} possible modules\n".format(len(available_modules)))
 sys.stdout.write("checking dependencies...\n")
+missing_dependencies = []
 for dependency in dependencies:
-    if dependency[0].lower() in available_modules:
-        sys.stdout.write(dependency[0] + "...OK\n")
-    else:
-        sys.stdout.write(dependency[0] + "...BAD\n")
+    try:
+        if dependency[1] == '-1':
+            subprocess.check_call([pip_version, '-m', 'pip', 'show', dependency[0]], stdout=null_stream, stderr=null_stream)
+            sys.stdout.write(dependency[0] + "...OK\n")
+        else:
+            subprocess.check_call([pip_version, '-m', 'pip', 'show', dependency[0] + dependency[1]], stdout=null_stream, stderr=null_stream)
+            sys.stdout.write(dependency[0] + "...OK\n")
+    except subprocess.CalledProcessError as e:
         missing_dependencies.append(dependency)
+        sys.stdout.write(dependency[0] + "...BAD\n")
+    except Exception as e:
+        sys.stderr.write(str(e))
+        sys.exit(-1)
 
+time.sleep(0.1)  # wait for subprocess to finish printing
 if len(missing_dependencies) > 0:
     sys.stdout.write("missing {} dependencies\n".format(len(missing_dependencies)))
     try_install = input("attempt to install? [y/n]: ")
@@ -141,13 +118,16 @@ if len(missing_dependencies) > 0:
             for module in missing_dependencies:
                 try:
                     if module[1] == '-1':
-                        subprocess.check_call(['python', '-m', 'pip', 'install', module[0]])
+                        subprocess.check_call([pip_version, '-m', 'pip', 'install', module[0]])
                         missing_dependencies.remove(module)
                     else:
-                        subprocess.check_call(['python', '-m', 'pip', 'install', module[0] + module[1]])
+                        subprocess.check_call([pip_version, '-m', 'pip', 'install', module[0] + module[1]])
                         missing_dependencies.remove(module)
-                except Exception as e:
-                    sys.stderr.write('\n{}\nfailed to install module {} !\n'.format(e, module[0]))
+                except subprocess.CalledProcessError as e:
+                    if e.returncode == 1:  # ignoring the upgrade pip version error
+                        missing_dependencies.remove(module)
+                    else:
+                        sys.stderr.write('\n{}\nfailed to install module {} !\n'.format(e, module[0]))
 
 # print final details
 time.sleep(0.1)  # wait for subprocess to finish printing
@@ -167,3 +147,7 @@ if success == 1:
     sys.stdout.write("\nsuccessfully setup project environment\n")
 
 sys.stdout.write("\nfinished\n")
+
+
+# TODO VENV SETUP
+# TODO FIX KNOWN BUG WINERROR 2 .... RELATED TO SUBPROCESS, FIND BUG HERE: https://bugs.python.org/issue17023

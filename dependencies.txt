@@ -1,0 +1,2 @@
+requests:-1  # (name, pip version string) -1 is lastest version
+python-twitter:-1

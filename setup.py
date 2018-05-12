@@ -25,7 +25,7 @@ author = 'Dylan Randall'
 email = 'dylan.d.randall@gmail.com'
 last_updated = '12/05/2018'
 min_compatible_version = (3, 6)
-pip_version = 'python3'
+pip_version = 'python'
 
 # [module_name, version_sum] , if version_sum is -1 -> gets latest
 dependencies = [['requests', '-1'], ['python-twitter', '==3.4.1']]
@@ -101,7 +101,10 @@ for dependency in dependencies:
         missing_dependencies.append(dependency)
         sys.stdout.write(dependency[0] + "...BAD\n")
     except Exception as e:
-        sys.stderr.write(str(e))
+        time.sleep(0.1)  # wait for subprocess to finish printing
+        sys.stderr.write(str(e) + "\n")
+        sys.stderr.write("This is a known bug... is your python3 environment path correct?\n")
+        sys.stderr.write("bug: https://bugs.python.org/issue17023\n")
         sys.exit(-1)
 
 time.sleep(0.1)  # wait for subprocess to finish printing
@@ -129,13 +132,16 @@ if len(missing_dependencies) > 0:
                     else:
                         sys.stderr.write('\n{}\nfailed to install module {} !\n'.format(e, module[0]))
 
+try:
+    null_stream.close()  # attempts to close stream if applicable
+except Exception:
+    pass
+
 # print final details
 time.sleep(0.1)  # wait for subprocess to finish printing
-success = 1
 sys.stdout.write("\n\nDetails\n-------\nTitle: {}\nAuthor: {}\nEmail: {}\nLast Updated: {}\n".format(title, author,
                                                                                              email, last_updated))
 if len(missing_dependencies) > 0:
-    success = 0
     sys.stdout.write("missing {} dependencies:\n".format(len(missing_dependencies)))
     for module in missing_dependencies:
         if module[1] == '-1':
@@ -143,11 +149,6 @@ if len(missing_dependencies) > 0:
         else:
             sys.stdout.write('    -{}{}\n'.format(module[0], module[1]))
 
-if success == 1:
-    sys.stdout.write("\nsuccessfully setup project environment\n")
-
 sys.stdout.write("\nfinished\n")
 
-
 # TODO VENV SETUP
-# TODO FIX KNOWN BUG WINERROR 2 .... RELATED TO SUBPROCESS, FIND BUG HERE: https://bugs.python.org/issue17023

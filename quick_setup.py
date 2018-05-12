@@ -81,3 +81,14 @@ for dependency in parse_dependencies():
     exec_pip(dependency)
 
 sys.stdout.write('\nquick setup finished\n')
+sys.stdout.write('\nDetails\n-------\n')
+sys.stdout.write('Title: ' + title + '\n')
+sys.stdout.write('Version: ' + version + '\n')
+sys.stdout.write('Description: ' + description + '\n')
+sys.stdout.write('Author: ' + author + '\n')
+sys.stdout.write('Author\'s Email: ' + author + '\n')
+
+if download_url:
+    sys.stdout.write('Download URL: ' + download_url + '\n')
+
+# TODO ADD ABILITY TO SAVE DETAILS TO FILE

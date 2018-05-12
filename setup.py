@@ -7,11 +7,12 @@ import sys
 import os
 
 
+title = "Python 3 Project Template"
 author = 'Dylan Randall'
 email = 'dylan.d.randall@gmail.com'
 last_updated = '12/05/2018'
 min_compatible_version = (3, 6)
-dependencies = [['requests', '-1']]  # [module_name, version_sum] , if version_sum is -1 -> gets latest
+dependencies = [['requests', '-1'], ['twitter', '==1.18.0']]  # [module_name, version_sum] , if version_sum is -1 -> gets latest
 
 packages = ['injection', 'logger']
 modules = ['definitions']
@@ -151,7 +152,8 @@ if len(missing_dependencies) > 0:
 # print final details
 time.sleep(0.1)  # wait for subprocess to finish printing
 success = 1
-sys.stdout.write("\n\nAuthor: {}\nEmail: {}\nLast Updated: {}\n".format(author, email, last_updated))
+sys.stdout.write("\n\nDetails\n-------\nTitle: {}\nAuthor: {}\nEmail: {}\nLast Updated: {}\n".format(title, author,
+                                                                                             email, last_updated))
 if len(missing_dependencies) > 0:
     success = 0
     sys.stdout.write("missing {} dependencies:\n".format(len(missing_dependencies)))

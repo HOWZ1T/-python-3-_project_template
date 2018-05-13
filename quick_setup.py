@@ -112,7 +112,26 @@ dirs = ['logs']
 packages = ['injection', 'logger']
 modules = ['definitions.py', 'dependencies.txt']
 
-sys.stdout.write('checking python version...\n')
+
+logo = '#----------------------------------------------------------------#\n'
+logo += '|      ____        _      _       _____      _                   |\n'
+logo += '|     / __ \      (_)    | |     / ____|    | |                  |\n'
+logo += '|    | |  | |_   _ _  ___| | __ | (___   ___| |_ _   _ _ __      |\n'
+logo += '|    | |  | | | | | |/ __| |/ /  \___ \ / _ \ __| | | | \'_ \     |\n'
+logo += '|    | |__| | |_| | | (__|   <   ____) |  __/ |_| |_| | |_) |    |\n'
+logo += '|     \___\_\\\__,_|_|\___|_|\_\ |_____/ \___|\__|\__,_| .__/     |\n'
+logo += '|                                                     | |        |\n'
+logo += '|                                                     |_|        |\n'
+logo += '|                                                                |\n'
+logo += '#----------------------------------------------------------------#\n'
+logo += '|    By Dylan Randall                                            |\n'
+logo += '#----------------------------------------------------------------#'
+
+print(logo)
+save_details = input("\nsave details to INFO.txt ? [y/n]: ")
+save_details = save_details.lower()
+
+sys.stdout.write('\nchecking python version...\n')
 check_version(min_version, max_version)
 
 sys.stdout.write('\nchecking project structure...\n')
@@ -136,8 +155,6 @@ if len(dependencies) > 0:
         details += dependency + '\n'
 
 sys.stdout.write('\nquick setup finished\n\n' + details)
-save_details = input("\nsave details to INFO.txt ? [y/n]: ")
-save_details = save_details.lower()
 
 if len(save_details) > 0:
     if save_details[0] == 'y':

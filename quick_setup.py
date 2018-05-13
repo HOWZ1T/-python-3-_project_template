@@ -66,18 +66,49 @@ def exec_pip(dependency):
         sys.stderr.write(str(e) + '\n' + dependency + '...BAD\n')
 
 
+def check_version(min_version, max_version=None):
+    sys_version = sys.version_info
+
+    if max_version is None:
+        if sys_version >= min_version:
+            sys.stdout.write('Python version: {}...OK\n'.format(sys.version))
+        else:
+            sys.stderr.write('Python version: {}...BAD\nThis version does not meet the minimum version of: {}\n'.format(
+                sys.version, min_version))
+            sys.exit(5)
+    elif min_version > max_version:
+        sys.stderr.write('Setup configuration error!\nminimum version cannot exceed maximum version!\n')
+        sys.exit(6)
+    else:
+        if sys_version < min_version:
+            sys.stderr.write('Python version: {}...BAD\nThis version does not meet the minimum version of: {}\n'.format(
+                sys.version, min_version))
+            sys.exit(5)
+        elif sys_version > max_version:
+            sys.stderr.write('Python version: {}...BAD\nThis version exceeds the maximum version of: {}\n'.format(
+                sys.version, max_version))
+            sys.exit(7)
+        else:
+            sys.stdout.write('Python version: {}...OK\n'.format(sys.version))
+
+
 title = 'Python 3 Project template'
 description = 'A project template for python 3'
 author = 'Dylan David Randall'
 author_email = 'dylan.d.randall@gmail.com'
 version = '0.0.0'
 download_url = ''
+min_version = (3, 0, 0)
+max_version = (3, 9, 9)
 
 dirs = ['logs']
 packages = ['injection', 'logger']
 modules = ['definitions.py', 'dependencies.txt']
 
-sys.stdout.write('checking project structure...\n')
+sys.stdout.write('checking python version...\n')
+check_version(min_version, max_version)
+
+sys.stdout.write('\nchecking project structure...\n')
 check_project_structure(modules, packages, dirs)
 
 dependencies = parse_dependencies()

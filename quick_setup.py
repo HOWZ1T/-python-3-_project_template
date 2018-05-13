@@ -86,7 +86,7 @@ if len(dependencies) > 0:
     for dependency in dependencies:
         exec_pip(dependency)
 
-details = 'Details\n-------\nTitle: ' + title + '\nVersion: ' + version + '\n' + 'Description: ' + description + '\n' \
+details = 'Details\n-------\nTitle: ' + title + '\nVersion: ' + version + '\n' + 'Description: ' + description + '\n'\
           + 'Author: ' + author + '\n' + 'Author\'s Email: ' + author + '\n'
 
 if download_url:

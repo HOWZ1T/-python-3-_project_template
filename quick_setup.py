@@ -2,6 +2,13 @@ import subprocess
 import sys
 import os
 
+try:
+    import pip
+except ImportError:
+    sys.stderr.write('Please install pip and then re-run this script.\nFor installation instructions visit: ' +
+                     'https://pip.pypa.io/en/stable/installing/\n')
+    sys.exit(7)
+
 
 def check_project_structure(modules, packages, dirs):
     root = os.path.dirname(os.path.abspath(__file__))
